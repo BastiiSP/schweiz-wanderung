@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#1b2f5e" />
+  <title>Ein kleines Abenteuer</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛰️</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Gemalter Abendhimmel: Sterne, Wolken, Nebelband, Berge -->
+  <div class="backdrop" aria-hidden="true">
+    <div class="stars stars--far"></div>
+    <div class="stars stars--near"></div>
+    <div class="cloud cloud--one"></div>
+    <div class="cloud cloud--two"></div>
+    <div class="cloud cloud--three"></div>
+    <svg class="mist" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <path
+        d="M -60 210 C 140 120, 320 300, 470 220 S 720 90, 880 190"
+        fill="none" stroke="#fdf6ec" stroke-width="26" stroke-linecap="round"
+      />
+      <path
+        d="M -60 214 C 140 124, 320 304, 470 224 S 720 94, 880 194"
+        fill="none" stroke="#bfe3d9" stroke-width="8" stroke-linecap="round"
+      />
+    </svg>
+    <svg class="mountains mountains--far" viewBox="0 0 800 200" preserveAspectRatio="none">
+      <path d="M0 200 L0 120 L90 60 L170 130 L260 40 L350 120 L440 70 L540 140 L640 55 L730 120 L800 90 L800 200 Z" />
+    </svg>
+    <svg class="mountains mountains--near" viewBox="0 0 800 200" preserveAspectRatio="none">
+      <path d="M0 200 L0 150 L120 90 L230 160 L340 80 L470 165 L580 100 L700 170 L800 130 L800 200 Z" />
+    </svg>
+  </div>
+
+  <button type="button" id="mute-button" aria-pressed="false" aria-label="Ton an/aus">🔊</button>
+
+  <main id="app">
+    <!-- Start -->
+    <section class="screen" data-screen="start">
+      <div class="screen__body">
+        <svg class="totoro" viewBox="0 0 120 112" aria-hidden="true">
+          <path d="M42 30 L36 6 L54 24 Z" />
+          <path d="M78 30 L84 6 L66 24 Z" />
+          <path d="M60 20 C 38 20 25 40 21 64 C 16 92 34 106 60 106 C 86 106 104 92 99 64 C 95 40 82 20 60 20 Z" />
+          <ellipse class="totoro__belly" cx="60" cy="80" rx="27" ry="20" />
+          <path class="totoro__chevron" d="M42 74 l6 5 l6 -5" />
+          <path class="totoro__chevron" d="M54 71 l6 5 l6 -5" />
+          <path class="totoro__chevron" d="M66 74 l6 5 l6 -5" />
+          <circle class="totoro__eye" cx="45" cy="42" r="3.4" />
+          <circle class="totoro__eye" cx="75" cy="42" r="3.4" />
+        </svg>
+        <h1 class="title">Bevor wir losgehen&nbsp;…</h1>
+        <p class="prose" id="start-text"></p>
+      </div>
+      <div class="screen__actions">
+        <button type="button" class="btn btn--primary" id="start-button">Los geht’s</button>
+      </div>
+    </section>
+
+    <!-- Etappen -->
+    <section class="screen" data-screen="stage" hidden>
+      <div class="trail" id="stage-trail" aria-hidden="true"></div>
+      <div class="screen__body">
+        <p class="prose prose--big" id="stage-text"></p>
+      </div>
+      <div class="screen__actions">
+        <button type="button" class="btn btn--primary" id="stage-next-button">Weiter</button>
+      </div>
+    </section>
+
+    <!-- Quiz-Zwischenstopp -->
+    <section class="screen" data-screen="quiz" hidden>
+      <div class="trail" id="quiz-trail" aria-hidden="true"></div>
+      <div class="screen__body">
+        <p class="prose" id="quiz-question"></p>
+        <div class="quiz-options" id="quiz-options"></div>
+        <p class="note note--reaction" id="quiz-reaction" hidden></p>
+      </div>
+      <div class="screen__actions">
+        <button type="button" class="btn btn--primary" id="quiz-next-button" hidden>Weiter</button>
+      </div>
+    </section>
+
+    <!-- Die Frage -->
+    <section class="screen screen--question" data-screen="final" hidden>
+      <div class="screen__body">
+        <p class="note note--question" id="final-question"></p>
+        <div class="answers" id="final-answers">
+          <button type="button" class="note note--answer note--yes" data-decision="ja">Ja</button>
+          <button type="button" class="note note--answer note--dodge" data-decision="nein">Nein</button>
+          <button type="button" class="note note--answer note--dodge" data-decision="vielleicht">Vielleicht</button>
+        </div>
+        <p class="hint" id="final-hint" hidden></p>
+      </div>
+    </section>
+
+    <!-- Sicherheitsfrage -->
+    <section class="screen screen--question" data-screen="security" hidden>
+      <div class="screen__body">
+        <p class="note note--question" id="security-question"></p>
+        <div class="answers" id="security-answers">
+          <button type="button" class="note note--answer note--yes" data-decision="sicher">Ja, ganz sicher!</button>
+          <button type="button" class="note note--answer note--dodge" data-decision="moment">Moment&nbsp;…</button>
+        </div>
+        <p class="hint" id="security-hint" hidden></p>
+      </div>
+    </section>
+
+    <!-- Gipfel -->
+    <section class="screen" data-screen="summit" hidden>
+      <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+      <div class="screen__body">
+        <div class="summit-flag" aria-hidden="true">⛰️</div>
+        <p class="prose prose--big prose--summit" id="summit-text"></p>
+      </div>
+      <div class="screen__actions">
+        <button type="button" class="btn btn--primary" id="summit-next-button">Weiter zur Urkunde</button>
+      </div>
+    </section>
+
+    <!-- Urkunde -->
+    <section class="screen screen--certificate" data-screen="certificate" hidden>
+      <div class="screen__body">
+        <canvas id="certificate-canvas" width="1000" height="1500"></canvas>
+      </div>
+      <div class="screen__actions">
+        <button type="button" class="btn btn--primary" id="certificate-download-button">Urkunde speichern</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/content.js"></script>
+  <script src="js/flow.js"></script>
+  <script src="js/dodge.js"></script>
+  <script src="js/confetti.js"></script>
+  <script src="js/certificate.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

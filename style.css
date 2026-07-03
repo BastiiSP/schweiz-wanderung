@@ -1,0 +1,533 @@
+/* ==========================================================================
+   Ghibli-Dämmerung – gemalter Abendhimmel über den Bergen
+   ========================================================================== */
+
+:root {
+  --sky-deep: #1b2f5e;
+  --sky-blue: #2c3e6b;
+  --sky-purple: #6d4f9e;
+  --sky-mauve: #9a63a8;
+  --sky-orange: #e08a63;
+  --sky-glow: #f2b279;
+  --ink: #3a2f55;
+  --paper: #fdf3dd;
+  --paper-edge: #ecd9b4;
+  --cream: #fdf6ec;
+  --gold: #e8c47a;
+  --mint: #bfe3d9;
+  --soot: #241d31;
+  --shadow-soft: 0 10px 30px rgba(20, 15, 45, 0.35);
+
+  --font-story: "Fraunces", "Georgia", serif;
+  --font-note: "Caveat", "Bradley Hand", cursive;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-story);
+  color: var(--cream);
+  background: linear-gradient(
+    180deg,
+    var(--sky-deep) 0%,
+    var(--sky-blue) 22%,
+    var(--sky-purple) 46%,
+    var(--sky-mauve) 64%,
+    var(--sky-orange) 84%,
+    var(--sky-glow) 100%
+  );
+  -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+/* --------------------------------------------------------------------------
+   Hintergrund: Sterne, Wolken, Nebelband (ein Gruß an einen Flussgeist), Berge
+   -------------------------------------------------------------------------- */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.stars {
+  position: absolute;
+  inset: 0 0 40% 0;
+  background-image:
+    radial-gradient(1.4px 1.4px at 12% 18%, var(--cream) 55%, transparent),
+    radial-gradient(1.1px 1.1px at 28% 8%, var(--cream) 55%, transparent),
+    radial-gradient(1.6px 1.6px at 41% 24%, var(--cream) 55%, transparent),
+    radial-gradient(1px 1px at 57% 12%, var(--cream) 55%, transparent),
+    radial-gradient(1.5px 1.5px at 68% 27%, var(--cream) 55%, transparent),
+    radial-gradient(1.1px 1.1px at 79% 9%, var(--cream) 55%, transparent),
+    radial-gradient(1.3px 1.3px at 90% 20%, var(--cream) 55%, transparent),
+    radial-gradient(1px 1px at 22% 34%, var(--cream) 55%, transparent),
+    radial-gradient(1.2px 1.2px at 49% 38%, var(--cream) 55%, transparent),
+    radial-gradient(1px 1px at 84% 36%, var(--cream) 55%, transparent);
+  animation: twinkle 5s ease-in-out infinite;
+}
+
+.stars--near {
+  background-image:
+    radial-gradient(2px 2px at 8% 28%, var(--cream) 60%, transparent),
+    radial-gradient(1.8px 1.8px at 35% 15%, var(--cream) 60%, transparent),
+    radial-gradient(2.2px 2.2px at 63% 6%, var(--gold) 60%, transparent),
+    radial-gradient(1.7px 1.7px at 74% 31%, var(--cream) 60%, transparent),
+    radial-gradient(2px 2px at 93% 13%, var(--cream) 60%, transparent);
+  animation: twinkle 7s ease-in-out infinite reverse;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.35; }
+}
+
+.cloud {
+  position: absolute;
+  width: 46vw;
+  height: 9vh;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(253, 246, 236, 0.28), transparent);
+  filter: blur(6px);
+  animation: drift 70s linear infinite;
+}
+
+.cloud--one { top: 16%; left: -50%; }
+.cloud--two { top: 34%; left: -70%; width: 60vw; animation-duration: 95s; animation-delay: -30s; }
+.cloud--three { top: 8%; left: -60%; width: 38vw; animation-duration: 80s; animation-delay: -55s; }
+
+@keyframes drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(260vw); }
+}
+
+.mist {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.14;
+  filter: blur(3px);
+  animation: mist-breathe 12s ease-in-out infinite;
+}
+
+@keyframes mist-breathe {
+  0%, 100% { opacity: 0.14; transform: translateY(0); }
+  50% { opacity: 0.22; transform: translateY(-12px); }
+}
+
+.mountains {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 26vh;
+}
+
+.mountains--far {
+  height: 32vh;
+  fill: rgba(43, 39, 84, 0.55);
+}
+
+.mountains--near {
+  fill: rgba(30, 25, 62, 0.85);
+}
+
+/* --------------------------------------------------------------------------
+   Grundgerüst der Screens
+   -------------------------------------------------------------------------- */
+
+#app {
+  position: relative;
+  height: 100dvh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(16px, 5vh, 48px) 24px calc(24px + env(safe-area-inset-bottom));
+  text-align: center;
+}
+
+.screen[hidden] {
+  display: none;
+}
+
+.screen__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 3.5vh, 32px);
+  min-height: 0;
+}
+
+.screen__actions {
+  flex: none;
+  padding-top: 16px;
+}
+
+/* Sanftes Aufsteigen beim Screenwechsel */
+.screen.is-entering .screen__body,
+.screen.is-entering .screen__actions {
+  animation: rise 0.55s cubic-bezier(0.22, 0.9, 0.3, 1) both;
+}
+
+.screen.is-entering .screen__actions {
+  animation-delay: 0.18s;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Typografie
+   -------------------------------------------------------------------------- */
+
+.title {
+  font-weight: 600;
+  font-size: clamp(1.7rem, 7vw, 2.4rem);
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 18px rgba(20, 15, 45, 0.45);
+}
+
+.prose {
+  max-width: 34ch;
+  font-size: clamp(1.15rem, 4.8vw, 1.5rem);
+  line-height: 1.55;
+  font-weight: 400;
+  text-shadow: 0 2px 14px rgba(20, 15, 45, 0.5);
+  text-wrap: balance;
+}
+
+.prose--big {
+  font-size: clamp(1.3rem, 5.4vw, 1.7rem);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.prose--summit {
+  white-space: pre-line;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.hint {
+  min-height: 3em;
+  max-width: 32ch;
+  margin: 0 auto;
+  font-family: var(--font-note);
+  font-size: clamp(1.2rem, 5vw, 1.5rem);
+  color: var(--gold);
+  text-shadow: 0 2px 10px rgba(20, 15, 45, 0.6);
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+
+.btn {
+  font-family: var(--font-story);
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--cream), #f3e3c2);
+  border: none;
+  border-radius: 999px;
+  padding: 18px 44px;
+  min-height: 56px;
+  box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 4px 14px rgba(20, 15, 45, 0.3);
+}
+
+#mute-button {
+  position: fixed;
+  top: calc(14px + env(safe-area-inset-top));
+  right: calc(14px + env(safe-area-inset-right));
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  font-size: 1.25rem;
+  line-height: 1;
+  border: 1px solid rgba(253, 246, 236, 0.35);
+  border-radius: 50%;
+  background: rgba(30, 25, 62, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   Notizzettel – handbeschrieben, mit Klebestreifen
+   -------------------------------------------------------------------------- */
+
+.note {
+  position: relative;
+  font-family: var(--font-note);
+  font-weight: 700;
+  color: var(--ink);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45), transparent 30%),
+    var(--paper);
+  border: none;
+  border-radius: 4px 10px 6px 8px;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+}
+
+/* Klebestreifen */
+.note::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 58px;
+  height: 20px;
+  transform: translateX(-50%) rotate(-3deg);
+  background: rgba(253, 246, 236, 0.5);
+  border-left: 1px dashed rgba(58, 47, 85, 0.15);
+  border-right: 1px dashed rgba(58, 47, 85, 0.15);
+  backdrop-filter: blur(1px);
+}
+
+.note--question {
+  font-size: clamp(1.9rem, 8.5vw, 2.6rem);
+  line-height: 1.25;
+  padding: 26px 30px 30px;
+  max-width: 21ch;
+  transform: rotate(-1.5deg);
+}
+
+.note--reaction {
+  font-size: clamp(1.25rem, 5.2vw, 1.6rem);
+  line-height: 1.35;
+  padding: 18px 22px 20px;
+  max-width: 26ch;
+  transform: rotate(1.2deg);
+  animation: rise 0.4s ease both;
+}
+
+.note--answer {
+  position: absolute;
+  font-size: clamp(1.5rem, 6.5vw, 1.9rem);
+  padding: 16px 28px 18px;
+  min-width: 108px;
+  min-height: 60px;
+  transition: left 0.22s cubic-bezier(0.3, 1.4, 0.5, 1), top 0.22s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.note--yes {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 30%),
+    #eaf6e2;
+  font-size: clamp(1.9rem, 8vw, 2.4rem);
+  padding: 20px 40px 22px;
+  z-index: 2;
+}
+
+/* Antwort-Spielfeld */
+.answers {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: clamp(240px, 40dvh, 380px);
+}
+
+.note--yes { left: 50%; top: 12%; transform: translateX(-50%) rotate(-2deg); }
+.note--answer[data-decision="nein"] { left: 12%; top: 62%; transform: rotate(3deg); }
+.note--answer[data-decision="vielleicht"] { left: 52%; top: 66%; transform: rotate(-4deg); }
+.note--answer[data-decision="moment"] { left: 30%; top: 64%; transform: rotate(4deg); }
+
+/* Sobald ein Zettel flieht, übernimmt JS left/top in px */
+.note--dodge.is-dodging {
+  transform: rotate(var(--dodge-tilt, 3deg));
+  transition: left 0.18s ease-out, top 0.18s ease-out;
+}
+
+/* --------------------------------------------------------------------------
+   Quiz
+   -------------------------------------------------------------------------- */
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.quiz-options .note {
+  position: relative;
+  font-size: clamp(1.3rem, 5.5vw, 1.6rem);
+  padding: 14px 20px 16px;
+  min-height: 58px;
+  text-align: center;
+}
+
+.quiz-options .note:nth-child(odd) { transform: rotate(-1.3deg); }
+.quiz-options .note:nth-child(even) { transform: rotate(1.5deg); }
+
+.quiz-options .note::before { width: 44px; height: 16px; top: -8px; }
+
+.quiz-options .note.is-chosen {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 30%),
+    #eaf6e2;
+}
+
+.quiz-options.is-answered .note:not(.is-chosen) {
+  opacity: 0.4;
+}
+
+/* --------------------------------------------------------------------------
+   Fortschritt: kleine Ruß-Wesen wandern den Pfad entlang
+   -------------------------------------------------------------------------- */
+
+.trail {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  padding-top: 8px;
+}
+
+.soot {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border-radius: 48% 52% 45% 55%;
+  background: radial-gradient(circle at 40% 38%, #4a3f60 0%, var(--soot) 65%);
+  box-shadow:
+    0 -7px 0 -6px var(--soot),
+    7px -5px 0 -6.5px var(--soot),
+    -7px -5px 0 -6.5px var(--soot),
+    8px 3px 0 -7px var(--soot),
+    -8px 3px 0 -7px var(--soot),
+    0 8px 0 -7px var(--soot);
+  opacity: 0.35;
+  transition: opacity 0.3s ease;
+}
+
+/* Augen */
+.soot::before,
+.soot::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  width: 4.5px;
+  height: 4.5px;
+  border-radius: 50%;
+  background: var(--cream);
+}
+
+.soot::before { left: 2.5px; }
+.soot::after { right: 2.5px; }
+
+.soot--done {
+  opacity: 1;
+}
+
+.soot--current {
+  opacity: 1;
+  animation: soot-hop 0.9s ease-in-out infinite;
+}
+
+@keyframes soot-hop {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-5px) rotate(-6deg); }
+  60% { transform: translateY(0) rotate(4deg); }
+}
+
+/* --------------------------------------------------------------------------
+   Start: Totoro wacht über den Anfang
+   -------------------------------------------------------------------------- */
+
+.totoro {
+  width: clamp(84px, 22vw, 120px);
+  fill: rgba(24, 20, 50, 0.9);
+  filter: drop-shadow(0 6px 14px rgba(20, 15, 45, 0.4));
+}
+
+.totoro__belly {
+  fill: rgba(253, 246, 236, 0.16);
+}
+
+.totoro__chevron {
+  fill: none;
+  stroke: rgba(253, 246, 236, 0.35);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.totoro__eye {
+  fill: var(--cream);
+}
+
+/* --------------------------------------------------------------------------
+   Gipfel & Urkunde
+   -------------------------------------------------------------------------- */
+
+#confetti-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.summit-flag {
+  font-size: clamp(3rem, 14vw, 4.5rem);
+  filter: drop-shadow(0 4px 16px rgba(20, 15, 45, 0.5));
+  animation: soot-hop 2.4s ease-in-out infinite;
+}
+
+.screen--certificate .screen__body {
+  justify-content: center;
+}
+
+#certificate-canvas {
+  max-width: min(92vw, 440px);
+  max-height: 62dvh;
+  width: auto;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 18px 50px rgba(15, 10, 40, 0.55);
+}
