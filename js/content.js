@@ -37,7 +37,7 @@
     dodgeHint: 'Hm, diese Buttons sind flüchtiger als ein Flussgeist. Vielleicht ein Zeichen. 😌',
     summitText: 'Sie hat Ja gesagt! 🎉\nMelli & Basti – ab jetzt offiziell.\nDas war der Aufstieg. Alles ab hier ist Aussicht.',
     certificateText: 'Hiermit wird feierlich beurkundet: Melli und Basti sind ab dem heutigen Tage offiziell ein Paar. Besiegelt unter den Augen eines Flussdrachen, der bekanntlich nie einen Weg vergisst. Möge das gemeinsame Abenteuer lang, magisch und voller guter Aussichten sein.',
-    certificateImagePath: 'assets/images/certificate-bg.png'
+    certificateImagePath: 'assets/images/certificate-bg.jpg'
   };
 
   if (typeof module !== 'undefined' && module.exports) { module.exports = api; } else { global.Content = api; }

@@ -24,7 +24,7 @@ test('content exposes exact fixed texts and image path', () => {
     Content.certificateText,
     'Hiermit wird feierlich beurkundet: Melli und Basti sind ab dem heutigen Tage offiziell ein Paar. Besiegelt unter den Augen eines Flussdrachen, der bekanntlich nie einen Weg vergisst. Möge das gemeinsame Abenteuer lang, magisch und voller guter Aussichten sein.'
   );
-  assert.equal(Content.certificateImagePath, 'assets/images/certificate-bg.png');
+  assert.equal(Content.certificateImagePath, 'assets/images/certificate-bg.jpg');
 });
 
 test('content contains the four stages in order', () => {
